@@ -22,40 +22,116 @@ class Quiz extends React.Component{
       randNum: -1,
       newArr: [],
       quizTitle: "",
-      modalIsOpen: false
+      modalIsOpen: false,
+      modalMessage: "",
+      gameOver: false,
+      buttonText: "Next Question",
+      overlayClick: true
     };
 
     this.handleYesClick = this.handleYesClick.bind(this);
     this.handleNoClick = this.handleNoClick.bind(this);
     this.closeModal = this.closeModal.bind(this);
+    this.afterOpenModal = this.afterOpenModal.bind(this);
+    this.handleModalButtonClick = this.handleModalButtonClick.bind(this);
   }
 
-  // openModal(){
-  //   this.setState({modalIsOpen: true});
-  // }
   afterOpenModal(){
-    console.log("modal is open");
+    console.log("modal opened");
+    const randNumCalc = Math.floor(Math.random() * (this.state.newArr.length - 1));
+
+    var temp = this.state.newArr.filter((sd) => {
+      return sd.data !== this.state.newArr[this.state.randNum].data;
+    });
+
+    this.setState({
+      newArr: temp,
+      randNum: randNumCalc
+    });
+  }
+
+  //close modal and move to next question
+  handleModalButtonClick(){
+    if(this.state.gameOver === false){
+      this.closeModal();
+    }else{
+      window.location.reload();
+    }
   }
   closeModal(){
-    this.setState({modalIsOpen: false});
+    console.log("modal closed");
+    console.log(this.state.newArr);
+    console.log(this.state.randNum);
+
+    this.setState({
+      modalIsOpen: false,
+      quizTitle: this.state.newArr[this.state.randNum].data.title
+    });
   }
 
   componentDidMount(){
-    const randNumCalc = Math.floor(Math.random() * (this.props.subData.length - 0 + 1)) + 0;
-    this.setState({randNum: randNumCalc});
-    this.setState({quizTitle: this.props.subData[randNumCalc].data.title})
-
-    console.log(this.state.randNum);
+    const randNumCalc = Math.floor(Math.random() * this.props.subData.length);
+    console.log("component mounted");
+    console.log(this.props.subData);
     console.log(randNumCalc);
+
+    
+    this.setState({
+      randNum: randNumCalc,
+      quizTitle: this.props.subData[randNumCalc].data.title,
+      newArr: this.props.subData
+    });
   }
 
   handleYesClick(){
-    this.setState({modalIsOpen: true});
-    //logic, right or wrong answer, link to article
+    console.log(this.state.newArr[this.state.randNum].data.title);
+    console.log(this.state.newArr[this.state.randNum].data.subreddit);
+    console.log("yes clicked", this.state.newArr.length);
+    if(this.state.newArr.length === 10){
+      this.setState({
+        modalMessage: "This is the end of the quiz.",
+        overlayClick: false,
+        gameOver: true,
+        buttonText: "Refresh to restart",
+        modalIsOpen: true
+      })
+    }else if(this.state.newArr[this.state.randNum].data.subreddit === "TheOnion"){
+      this.setState({
+        modalMessage: "Correct! This article title is from The Onion.",
+        modalIsOpen: true
+      });
+    }else{
+      this.setState({
+        modalMessage: "Wrong! This article title is not from The Onion.",
+        modalIsOpen: true
+      });
+    }
   }
 
   handleNoClick(){
-
+    // console.log("no clicked", this.state.randNum);
+    console.log(this.state.newArr[this.state.randNum].data.title);
+    console.log(this.state.newArr[this.state.randNum].data.subreddit);
+    console.log("no clicked", this.state.newArr.length);
+    if(this.state.newArr.length === 10){
+      this.setState({
+        modalMessage: "This is the end of the quiz.",
+        overlayClick: false,
+        gameOver: true,
+        buttonText: "Refresh to restart",
+        modalIsOpen: true
+      })
+    }else if(this.state.newArr[this.state.randNum].data.subreddit === "nottheonion"){
+      this.setState({
+        modalMessage: "Correct! This article title is not from The Onion.",
+        modalIsOpen: true
+      });
+    }else{
+      this.setState({
+        modalMessage: "Wrong! This article title is from The Onion.",
+        modalIsOpen: true
+      });
+    }
   }
 
   render(){
@@ -75,10 +151,12 @@ class Quiz extends React.Component{
           onRequestClose={this.closeModal}
           style={modalStyle}
           contentLabel="Example modal"
+          shouldCloseOnOverlayClick={this.state.overlayClick}
         >
 
-          <button onClick={this.closeModal}>close</button>
-          <h1>I am modal</h1>
+          <h1>{this.state.modalMessage}</h1>
+          <button onClick={this.handleModalButtonClick}>{this.state.buttonText}</button>
+
         </Modal>
       </div>
     );
