@@ -27,14 +27,6 @@ class App extends React.Component{
     })
   }
 
-//   top: "50%",
-//   left: "50%",
-//   right: "50%",
-//   bottom: "auto",
-//   marginRight: "-50%",
-//   transform: "translate(-50%, -50%"
-// }
-
   render(){
     if(this.state.loading){
       return <h1>loading...</h1>
