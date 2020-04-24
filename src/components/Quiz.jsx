@@ -140,8 +140,8 @@ class Quiz extends React.Component{
     }
     return(
       <div>
-        <div>
-          <h1 style={{fontSize: "2.5em"}}>{this.state.quizTitle}</h1>
+        <div style={{paddingBottom: "20%"}}>
+          <h1 style={{fontSize: "2.5em", paddingBottom: "5%"}}>{this.state.quizTitle}</h1>
           <button className="massive ui green button" onClick={this.handleYesClick}>Onion-y</button>
           <button className="massive ui red button" onClick={this.handleNoClick}>Not the onion</button>
         </div>
