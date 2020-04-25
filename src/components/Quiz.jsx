@@ -1,14 +1,19 @@
 import React from "react";
 import Modal from "react-modal";
+import wrongImg from "./../images/wrongImg.png";
+import correctImg from "./../images/correctImg.png";
+import "./Quiz.css"
+
 
 const modalStyle = {
   content: {
+    display: "flex",
     top: "50%",
     left: "50%",
     right: "50%",
     bottom: "auto",
     marginRight: "-50%",
-    transform: "translate(-50%, -50%"
+    transform: "translate(-50%, -50%",
   }
 };
 
@@ -26,7 +31,10 @@ class Quiz extends React.Component{
       modalMessage: "",
       gameOver: false,
       buttonText: "Next Question",
-      overlayClick: true
+      overlayClick: true,
+      modalImage: correctImg,
+      questionNumber: 1,
+      questionURL: ""
     };
 
     this.handleYesClick = this.handleYesClick.bind(this);
@@ -37,7 +45,6 @@ class Quiz extends React.Component{
   }
 
   afterOpenModal(){
-    console.log("modal opened");
     const randNumCalc = Math.floor(Math.random() * (this.state.newArr.length - 1));
 
     var temp = this.state.newArr.filter((sd) => {
@@ -48,6 +55,7 @@ class Quiz extends React.Component{
       newArr: temp,
       randNum: randNumCalc
     });
+
   }
 
   //close modal and move to next question
@@ -59,23 +67,17 @@ class Quiz extends React.Component{
     }
   }
   closeModal(){
-    console.log("modal closed");
-    console.log(this.state.newArr);
-    console.log(this.state.randNum);
 
     this.setState({
       modalIsOpen: false,
-      quizTitle: this.state.newArr[this.state.randNum].data.title
+      quizTitle: this.state.newArr[this.state.randNum].data.title,
+      questionNumber: (20 - this.state.newArr.length) + 1
     });
   }
 
   componentDidMount(){
     const randNumCalc = Math.floor(Math.random() * this.props.subData.length);
-    console.log("component mounted");
-    console.log(this.props.subData);
-    console.log(randNumCalc);
 
-    
     this.setState({
       randNum: randNumCalc,
       quizTitle: this.props.subData[randNumCalc].data.title,
@@ -84,52 +86,73 @@ class Quiz extends React.Component{
   }
 
   handleYesClick(){
-    console.log(this.state.newArr[this.state.randNum].data.title);
-    console.log(this.state.newArr[this.state.randNum].data.subreddit);
-    console.log("yes clicked", this.state.newArr.length);
-    if(this.state.newArr.length === 10){
+    if(this.state.newArr[this.state.randNum].data.subreddit === "TheOnion"){
+      let message = "Correct! This article title is from The Onion.";
+      if(this.state.newArr.length === 11){
+        message = message + " Unfortunately, this is the end of the quiz.";
+        this.setState({
+          overlayClick: false,
+          gameOver: true,
+          buttonText: "Refresh to restart"
+        });
+      }
       this.setState({
-        modalMessage: "This is the end of the quiz.",
-        overlayClick: false,
-        gameOver: true,
-        buttonText: "Refresh to restart",
-        modalIsOpen: true
-      })
-    }else if(this.state.newArr[this.state.randNum].data.subreddit === "TheOnion"){
-      this.setState({
-        modalMessage: "Correct! This article title is from The Onion.",
-        modalIsOpen: true
+        modalMessage: message,
+        modalImage: correctImg,
+        modalIsOpen: true,
+        questionURL: this.state.newArr[this.state.randNum].data.url
       });
     }else{
+      let message = "Wrong! This article title is not from The Onion.";
+      if(this.state.newArr.length === 11){
+        message = message + " Unfortunately, this is the end of the quiz.";
+        this.setState({
+          overlayClick: false,
+          gameOver: true,
+          buttonText: "Refresh to restart"
+        });
+      }
       this.setState({
-        modalMessage: "Wrong! This article title is not from The Onion.",
-        modalIsOpen: true
+        modalMessage: message,
+        modalImage: wrongImg,
+        modalIsOpen: true,
+        questionURL: this.state.newArr[this.state.randNum].data.url
       });
     }
   }
 
   handleNoClick(){
-    // console.log("no clicked", this.state.randNum);
-    console.log(this.state.newArr[this.state.randNum].data.title);
-    console.log(this.state.newArr[this.state.randNum].data.subreddit);
-    console.log("no clicked", this.state.newArr.length);
-    if(this.state.newArr.length === 10){
+    if(this.state.newArr[this.state.randNum].data.subreddit === "nottheonion"){
+      let message = "Correct! This article title is not from The Onion.";
+      if(this.state.newArr.length === 11){
+        message = message + " Unfortunately, this is the end of the quiz.";
+        this.setState({
+          overlayClick: false,
+          gameOver: true,
+          buttonText: "Refresh to restart"
+        });
+      }
       this.setState({
-        modalMessage: "This is the end of the quiz.",
-        overlayClick: false,
-        gameOver: true,
-        buttonText: "Refresh to restart",
-        modalIsOpen: true
-      })
-    }else if(this.state.newArr[this.state.randNum].data.subreddit === "nottheonion"){
-      this.setState({
-        modalMessage: "Correct! This article title is not from The Onion.",
-        modalIsOpen: true
+        modalMessage: message,
+        modalImage: correctImg,
+        modalIsOpen: true,
+        questionURL: this.state.newArr[this.state.randNum].data.url
       });
     }else{
+      let message = "Wrong! This article title is from The Onion.";
+      if(this.state.newArr.length === 11){
+        message = message + " Unfortunately, this is the end of the quiz.";
+        this.setState({
+          overlayClick: false,
+          gameOver: true,
+          buttonText: "Refresh to restart"
+        })
+      }
       this.setState({
-        modalMessage: "Wrong! This article title is from The Onion.",
-        modalIsOpen: true
+        modalMessage: message,
+        modalImage: wrongImg,
+        modalIsOpen: true,
+        questionURL: this.state.newArr[this.state.randNum].data.url
       });
     }
   }
@@ -141,11 +164,12 @@ class Quiz extends React.Component{
     return(
       <div>
         <div style={{paddingBottom: "20%"}}>
+          <h2>{this.state.questionNumber}/10</h2>
           <h1 style={{fontSize: "2.5em", paddingBottom: "5%"}}>{this.state.quizTitle}</h1>
           <button className="massive ui green button" onClick={this.handleYesClick}>Onion-y</button>
           <button className="massive ui red button" onClick={this.handleNoClick}>Not the onion</button>
         </div>
-        <Modal 
+        <Modal
           isOpen={this.state.modalIsOpen}
           onAfterOpen={this.afterOpenModal}
           onRequestClose={this.closeModal}
@@ -153,10 +177,12 @@ class Quiz extends React.Component{
           contentLabel="Example modal"
           shouldCloseOnOverlayClick={this.state.overlayClick}
         >
-
-          <h1>{this.state.modalMessage}</h1>
+        <div className="ui center aligned container">
+          <img alt={this.state.modalImage} src={this.state.modalImage}/>
+          <h1 style={{paddingBottom: "5%"}}>{this.state.modalMessage}</h1>
+          <h2>Check out the article <a href={this.state.questionURL} target="_blank" rel="noopener noreferrer">here</a></h2>
           <button onClick={this.handleModalButtonClick}>{this.state.buttonText}</button>
-
+        </div>
         </Modal>
       </div>
     );
