@@ -180,7 +180,7 @@ class Quiz extends React.Component{
         <div className="ui center aligned container">
           <img alt={this.state.modalImage} src={this.state.modalImage}/>
           <h1 style={{paddingBottom: "5%"}}>{this.state.modalMessage}</h1>
-          <h2>Check out the article <a href={this.state.questionURL} target="_blank" rel="noopener noreferrer">here</a></h2>
+          <h2>Check out the source <a href={this.state.questionURL} target="_blank" rel="noopener noreferrer">here</a></h2>
           <button onClick={this.handleModalButtonClick}>{this.state.buttonText}</button>
         </div>
         </Modal>

@@ -5,7 +5,6 @@ import axios from "axios";
 class App extends React.Component{
 
   state = {
-    //prod ready
     subData: [],
     loading: true
   }
